@@ -1,6 +1,7 @@
 var gulp = require('gulp');
 var	gutil = require('gulp-util');//used to log stuff to terminal
 var coffee = require('gulp-coffee');//used to turn coffee files into .js files
+var browserify = require('gulp-browserify');
 var concat = require('gulp-concat');//concatinates all files in order of object/array
 
 var coffeeSources = ['components/coffee/tagline.coffee'];
@@ -21,5 +22,6 @@ gulp.task('coffee', function(){
 gulp.task('js', function(){
 	gulp.src(jsSources)
 	.pipe(concat('script.js'))
+	.pipe(browserify())
 	.pipe(gulp.dest('builds/development/js'))
 });
