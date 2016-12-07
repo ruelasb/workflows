@@ -15,21 +15,21 @@ var jsSources = [
 
 var sassSources = ['components/sass/style.scss'];
 
-gulp.task('coffee', function(){
+gulp.task('coffee', function(){//this task gets .coffee file and converts it into .js file in the scripts folder
 	gulp.src(coffeeSources)
 	.pipe(coffee({ bare: true })
 		.on('error', gutil.log))
 	.pipe(gulp.dest('components/scripts'))
 });
 
-gulp.task('js', function(){
+gulp.task('js', function(){//goes into the scripts forlder and "spits" out everything into one file
 	gulp.src(jsSources)
 	.pipe(concat('script.js'))
 	.pipe(browserify()) //looks through all thre requies and gets code from libraries
 	.pipe(gulp.dest('builds/development/js'))
 });
 
-gulp.task('compass', function(){
+gulp.task('compass', function(){//gets all the sass files and converts them to css and puts them into one file
 	gulp.src(sassSources)
 	.pipe(compass({
       sass: 'components/sass',
@@ -40,4 +40,8 @@ gulp.task('compass', function(){
 	.pipe(gulp.dest('builds/development/css'))
 });
 
-gulp.task('default',['coffee', 'js', 'compass']);
+gulp.task('watch',function(){
+	gulp.watch(coffeeSources, ['coffee']);
+	gulp.watch(jsSources, ['js']); 
+	gulp.watch('components/sass/*.scss', ['compass']);
+});
