@@ -4,6 +4,7 @@ var coffee = require('gulp-coffee');//used to turn coffee files into .js files
 var browserify = require('gulp-browserify');//gets all require variables and pulls all libraries
 var compass = require('gulp-compass');//gets all @import files and concat to css
 var concat = require('gulp-concat');//concatinates all files in order of object/array
+var connect = require('gulp-connect');
 
 var coffeeSources = ['components/coffee/tagline.coffee'];
 var jsSources = [
@@ -27,6 +28,7 @@ gulp.task('js', function(){//goes into the scripts forlder and "spits" out every
 	.pipe(concat('script.js'))
 	.pipe(browserify()) //looks through all thre requies and gets code from libraries
 	.pipe(gulp.dest('builds/development/js'))
+	.pipe(connect.reload())
 });
 
 gulp.task('compass', function(){//gets all the sass files and converts them to css and puts them into one file
@@ -38,7 +40,16 @@ gulp.task('compass', function(){//gets all the sass files and converts them to c
     	}))
 		.on('error', gutil.log)
 	.pipe(gulp.dest('builds/development/css'))
+	.pipe(connect.reload())
 });
+
+gulp.task('connect', function(){
+	connect.server({
+		root: 'builds/development/',
+    	livereload: true
+	});
+});
+
 
 gulp.task('watch',function(){
 	gulp.watch(coffeeSources, ['coffee']);
@@ -46,4 +57,5 @@ gulp.task('watch',function(){
 	gulp.watch('components/sass/*.scss', ['compass']);
 });
 
-gulp.task('default', ['coffee', 'js', 'compass', 'watch']);
+
+gulp.task('default', ['coffee', 'js', 'compass', 'connect','watch']);
