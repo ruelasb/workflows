@@ -8,7 +8,9 @@ var gulpif = require('gulp-if');//creates conditional tasks
 var uglify = require('gulp-uglify');//js library to control how your code should be minified
 var minifyHTML = require('gulp-htmlmin');//get html file from dev and place in production compressed and minified
 var jsonminify = require('gulp-jsonminify');
+var imagemin = require('gulp-imagemin');
 var concat = require('gulp-concat');//concatinates all files in order of object/array
+
 
 var env,
 	coffeeSources,
@@ -82,6 +84,7 @@ gulp.task('watch',function(){
 	gulp.watch('components/sass/*.scss', ['compass']);
 	gulp.watch('builds/development/*.html', ['html']);
 	gulp.watch('builds/development/js/*.json', ['json']);
+	gulp.watch('builds/development/images/**/*.*', ['images']);
 });
 
 gulp.task('html', function(){
@@ -91,6 +94,13 @@ gulp.task('html', function(){
 	.pipe(connect.reload())
 });
 
+gulp.task('images', function(){
+	gulp.src('builds/development/images/**/*.*')
+	.pipe(gulpif(env==='production', imagemin()))
+	.pipe(gulpif(env==='production', gulp.dest(outputDir + 'images')))
+	.pipe(connect.reload())
+})
+
 gulp.task('json', function(){
 	gulp.src('builds/development/js/*.json')
 	.pipe(gulpif(env==='production', jsonminify()))
@@ -99,4 +109,4 @@ gulp.task('json', function(){
 })
 
 
-gulp.task('default', ['html', 'json', 'coffee', 'js', 'compass', 'connect','watch']);
+gulp.task('default', ['html', 'json', 'coffee', 'js', 'compass', 'images', 'connect','watch']);
