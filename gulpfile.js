@@ -5,6 +5,8 @@ var browserify = require('gulp-browserify');//gets all require variables and pul
 var compass = require('gulp-compass');//gets all @import files and concat to css
 var concat = require('gulp-concat');//concatinates all files in order of object/array
 var connect = require('gulp-connect');
+var gulpif = require('gulp-if');//creates conditional tasks
+var uglify = require('gulp-uglify');//js library to control how your code should be minified
 
 var env,
 	coffeeSources,
@@ -47,6 +49,7 @@ gulp.task('js', function(){//goes into the scripts forlder and "spits" out every
 	gulp.src(jsSources)
 	.pipe(concat('script.js'))
 	.pipe(browserify()) //looks through all thre requies and gets code from libraries
+	.pipe(gulpif(env === 'production', uglify()))
 	.pipe(gulp.dest(outputDir + 'js'))
 	.pipe(connect.reload())
 });

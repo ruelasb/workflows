@@ -6,4 +6,4 @@ $ = require('jquery');
   return $('.tagline').append("" + item);
 })('Creative minds in Art');
 
-fill; 
+fill;
