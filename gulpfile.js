@@ -6,18 +6,35 @@ var compass = require('gulp-compass');//gets all @import files and concat to css
 var concat = require('gulp-concat');//concatinates all files in order of object/array
 var connect = require('gulp-connect');
 
-var coffeeSources = ['components/coffee/tagline.coffee'];
-var jsSources = [
+var env,
+	coffeeSources,
+	jsSources,
+	sassSources,
+	htmlSources,
+	jsonSources,
+	outputDir,
+	sassStyle;
+
+env = process.env.NODE_ENV || 'development';
+
+if (env === 'development') {
+	outputDir = 'builds/development/';
+	sassStyle = 'expanded';
+} else {
+	outputDir = 'builds/production/';
+	sassStyle = 'compressed';
+}
+
+coffeeSources = ['components/coffee/tagline.coffee'];
+jsSources = [
 	'components/scripts/rclick.js',
 	'components/scripts/pixgrid.js',
 	'components/scripts/tagline.js',
 	'components/scripts/template.js'
 ];
-
-var sassSources = ['components/sass/style.scss'];
-
-var htmlSources = ['builds/development/*.html'];
-var jsonSources = ['builds/development/js/*.json'];
+sassSources = ['components/sass/style.scss'];
+htmlSources = [ outputDir + '*.html'];
+jsonSources = [ outputDir + 'js/*.json'];
 
 gulp.task('coffee', function(){//this task gets .coffee file and converts it into .js file in the scripts folder
 	gulp.src(coffeeSources)
@@ -30,7 +47,7 @@ gulp.task('js', function(){//goes into the scripts forlder and "spits" out every
 	gulp.src(jsSources)
 	.pipe(concat('script.js'))
 	.pipe(browserify()) //looks through all thre requies and gets code from libraries
-	.pipe(gulp.dest('builds/development/js'))
+	.pipe(gulp.dest(outputDir + 'js'))
 	.pipe(connect.reload())
 });
 
@@ -38,17 +55,17 @@ gulp.task('compass', function(){//gets all the sass files and converts them to c
 	gulp.src(sassSources)
 	.pipe(compass({
       sass: 'components/sass',
-      images: 'builds/development/images',
-      style: 'expanded'
+      images: outputDir + 'images',
+      style: sassStyle
     	}))
 		.on('error', gutil.log)
-	.pipe(gulp.dest('builds/development/css'))
+	.pipe(gulp.dest(outputDir + 'css'))
 	.pipe(connect.reload())
 });
 
 gulp.task('connect', function(){
 	connect.server({
-		root: 'builds/development/',
+		root: outputDir,
     	livereload: true
 	});
 });
