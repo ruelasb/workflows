@@ -3,11 +3,12 @@ var	gutil = require('gulp-util');//used to log stuff to terminal
 var coffee = require('gulp-coffee');//used to turn coffee files into .js files
 var browserify = require('gulp-browserify');//gets all require variables and pulls all libraries
 var compass = require('gulp-compass');//gets all @import files and concat to css
-var concat = require('gulp-concat');//concatinates all files in order of object/array
 var connect = require('gulp-connect');
 var gulpif = require('gulp-if');//creates conditional tasks
 var uglify = require('gulp-uglify');//js library to control how your code should be minified
 var minifyHTML = require('gulp-htmlmin');//get html file from dev and place in production compressed and minified
+var jsonminify = require('gulp-jsonminify');
+var concat = require('gulp-concat');//concatinates all files in order of object/array
 
 var env,
 	coffeeSources,
@@ -80,7 +81,7 @@ gulp.task('watch',function(){
 	gulp.watch(jsSources, ['js']); 
 	gulp.watch('components/sass/*.scss', ['compass']);
 	gulp.watch('builds/development/*.html', ['html']);
-	gulp.watch(jsonSources, ['json']);
+	gulp.watch('builds/development/js/*.json', ['json']);
 });
 
 gulp.task('html', function(){
@@ -91,7 +92,9 @@ gulp.task('html', function(){
 });
 
 gulp.task('json', function(){
-	gulp.src(jsonSources)
+	gulp.src('builds/development/js/*.json')
+	.pipe(gulpif(env==='production', jsonminify()))
+	.pipe(gulpif(env==='production', gulp.dest('builds/production/js')))
 	.pipe(connect.reload())
 })
 
